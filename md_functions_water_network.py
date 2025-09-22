@@ -16,9 +16,6 @@ import dynetx as dnx
 import sys, os, math
 from math import exp, log
 
-from tkinter import Tk, filedialog
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 import scipy
 import scipy.sparse.linalg

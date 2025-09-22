@@ -1,9 +1,3 @@
-# This script contains the responses to the various "if"s of the "md_main_water.py" script
-
-# Chiara Faccio, Scuola Normale Superiore, Pisa
-# chiara.faccio@sns.it
-# March 2023
-
 from md_functions_water_network import *
 from collections import defaultdict
 from scipy.spatial import KDTree
