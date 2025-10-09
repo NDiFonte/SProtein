@@ -1,9 +1,57 @@
-from md_functions_water_network import *
+#from md_functions_water_network import *
+import numpy as np
+import numpy.linalg
+from numpy.linalg import norm
+from numpy import ones, zeros, arange, inf
+
+import random
+from collections import deque
+
+import networkx as nx
+import dynetx as dnx
+
+import sys, os, math
+from math import exp, log
+
+
+import scipy
+import scipy.sparse.linalg
+import scipy.io
+from scipy.sparse import csr_matrix, csc_matrix, find
+from scipy.spatial import distance_matrix
+from scipy.sparse.linalg import norm as scipy_norm
+from scipy.linalg import expm
+from scipy.sparse.linalg import expm_multiply, cg
+from scipy.sparse import identity, diags, bmat, kron
+from scipy.sparse.linalg import spsolve
+from scipy.spatial.distance import pdist
+
+import itertools
+import MDAnalysis as mda
+
+
 from collections import defaultdict
 from scipy.spatial import KDTree
 np.set_printoptions(threshold=np.inf)
 import plotly.graph_objects as go
 #mdanalysis imported as mda
+
+def angle_between(H, O1, O2):
+
+    '''
+    Returns the angle in radians between the points H O1 O2
+    '''
+
+    O1H =  H - O1
+    O1O2 = O2 - O1
+    V1 = O1H/np.linalg.norm(O1H)
+    V2 = O1O2/np.linalg.norm(O1O2)
+    res = np.clip(np.dot(V1, V2), -1.0, 1.0)
+    angle = np.arccos(res)
+
+    return angle
+
+
 
 def extract_data_sp(U, kk, list_molecules, list_nodes):
     '''
