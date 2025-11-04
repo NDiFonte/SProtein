@@ -1,5 +1,3 @@
-
-from md_link_to_main import *
 from md_sp_link_to_main import *
  
 if __name__ == '__main__': 
@@ -116,4 +114,5 @@ if __name__ == '__main__':
     fout4.close()
     fout5.close()
     fout6.close()
+
 
