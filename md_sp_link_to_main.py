@@ -33,7 +33,8 @@ import MDAnalysis as mda
 from collections import defaultdict
 from scipy.spatial import KDTree
 np.set_printoptions(threshold=np.inf)
-import plotly.graph_objects as go
+
+#import plotly.graph_objects as go COMMENTED FOR GRAPH PLOT DEBUG
 #mdanalysis imported as mda
 
 def angle_between(H, O1, O2):
@@ -827,4 +828,5 @@ def plot_graph_undirected(coordinates, sparse_adj_matrix, additional_points=None
 
     # Show the figure
     fig.show()
+
 
