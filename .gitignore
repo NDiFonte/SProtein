@@ -1,0 +1,9 @@
+__pycache__/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+sprotein_output/
+examples/sprotein_output/
+.*_offsets.npz
+.*_offsets.lock
