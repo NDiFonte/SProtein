@@ -121,8 +121,8 @@ def test_example_run(tmp_path):
     cfg.output_dir = str(tmp_path)
     stats = run(cfg, progress=False, log=lambda *a: None)
     assert stats["frames"] == 11
-    assert stats["frames_with_path"] == 4  # frames 2, 9, 10, 11 (same as SProtein 1.x)
+    assert stats["frames_with_path"] == 1  # only frame 11 with edge_distance = 3.5
     nodes = read_frames(tmp_path / "traj_path_nodes.dat")
-    first = nodes[1][1][0]
-    assert first[0] == "8563 PAL 651" and len(first) == 10
+    path = nodes[10][1][0]
+    assert path[0] == "8563 PAL 651" and len(path) == 7
     assert (tmp_path / "summary.csv").read_text().count("\n") == 12

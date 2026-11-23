@@ -20,7 +20,7 @@ selections = []
 
 water          = "auto"   # water residue name, or "auto" (SOL, HOH, WAT, TIP3, ...)
 protein_cutoff = 5.0      # A, water oxygens within this distance of the protein become nodes
-edge_distance  = 4.0      # A, two nodes closer than this are connected
+edge_distance  = 3.5      # A, two nodes closer than this are connected
 bulk_degree    = 7        # water nodes with at least this many water neighbours are "bulk" (path targets)
 pbc            = true     # periodic boundary conditions
 

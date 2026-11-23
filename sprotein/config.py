@@ -28,7 +28,7 @@ class Config:
     selections: list[str] = field(default_factory=list)
     water: str = "auto"
     protein_cutoff: float = 5.0
-    edge_distance: float = 4.0
+    edge_distance: float = 3.5
     bulk_degree: int = 7
     pbc: bool = True
     directed: bool = False
@@ -145,7 +145,7 @@ selections = []
 
 water          = "auto"   # water residue name, or "auto" (SOL, HOH, WAT, TIP3, ...)
 protein_cutoff = 5.0      # A, water oxygens within this distance of the protein become nodes
-edge_distance  = 4.0      # A, two nodes closer than this are connected
+edge_distance  = 3.5      # A, two nodes closer than this are connected
 bulk_degree    = 7        # water nodes with at least this many water neighbours are "bulk" (path targets)
 pbc            = true     # periodic boundary conditions
 

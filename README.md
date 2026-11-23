@@ -69,7 +69,7 @@ sprotein vmd -c config.toml          # then: vmd sprotein_output/VMD_path_traj.x
 | `selections` | `[]` | extra protein/ligand atoms used as nodes, e.g. `["resname GLU and name OE1 OE2"]` |
 | `water` | `"auto"` | water residue name (auto-detects SOL, HOH, WAT, TIP3, ...) |
 | `protein_cutoff` | 5.0 Å | water oxygens within this distance of the protein become nodes |
-| `edge_distance` | 4.0 Å | nodes closer than this are connected |
+| `edge_distance` | 3.5 Å | nodes closer than this are connected |
 | `bulk_degree` | 7 | waters with ≥ this many water neighbours are bulk (path targets) |
 | `pbc` | `true` | periodic boundary conditions |
 | `directed` | `false` | follow hydrogen bonds instead of plain distances |
