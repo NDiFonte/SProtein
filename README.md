@@ -78,6 +78,25 @@ sprotein vmd -c config.toml          # then: vmd sprotein_output/VMD_path_traj.x
 
 Frames can be restricted with `start`, `stop`, `step` in `[input]` (or `--start/--stop/--step`).
 
+### Crystal structures (single PDB, waters without hydrogens)
+
+SProtein also works on a single structure such as a crystal structure:
+
+```toml
+[input]
+topology   = "3KS3.pdb"
+trajectory = ""          # empty: single structure
+
+[graph]
+pbc         = false      # the CRYST1 cell is not a periodic simulation box
+bulk_degree = 4          # resolved crystal waters are sparse: lower the bulk threshold
+```
+
+Waters with only the oxygen (e.g. `HOH` with atom `O`) are accepted for undirected
+graphs. Directed graphs need hydrogens and give a clear error otherwise.
+Crystal waters are far sparser than in a simulation, so `bulk_degree` (and possibly
+`edge_distance`) usually need lower/higher values than for MD.
+
 ## Output (`sprotein_output/` by default)
 
 | file | content |

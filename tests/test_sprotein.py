@@ -126,3 +126,42 @@ def test_example_run(tmp_path):
     path = nodes[10][1][0]
     assert path[0] == "8563 PAL 651" and len(path) == 7
     assert (tmp_path / "summary.csv").read_text().count("\n") == 12
+
+
+# ------------------------------------------- crystal-like structure (water = O only)
+def _write_crystal_pdb(path):
+    atoms = [("N", "ALA", 1, (0, 0, 0)), ("CA", "ALA", 1, (1.5, 0, 0)),
+             ("C", "ALA", 1, (3, 0, 0)), ("O", "ALA", 1, (3, 1.2, 0))]
+    # chain of waters from the protein to a small "bulk" cluster around x = 21
+    xyz = [(x, 1.2, 0) for x in (6, 9, 12, 15, 18, 21)] + [(21, 4.2, 0), (21, -1.8, 0), (24, 1.2, 0)]
+    atoms += [("O", "HOH", 100 + k, p) for k, p in enumerate(xyz)]
+    lines = [
+        f"{'ATOM  ' if res == 'ALA' else 'HETATM'}{i:5d}  {name:<3} {res} A{resid:4d}    "
+        f"{p[0]:8.3f}{p[1]:8.3f}{p[2]:8.3f}  1.00  0.00          {name[0]:>2}"
+        for i, (name, res, resid, p) in enumerate(atoms, 1)
+    ]
+    path.write_text("\n".join(lines) + "\nEND\n")
+
+
+def test_oxygen_only_water(tmp_path):
+    from sprotein.config import Config
+    from sprotein.core import PathFinder, run
+    from sprotein.selection import SelectionError, detect_water
+    import MDAnalysis as mda
+
+    pdb = tmp_path / "crystal.pdb"
+    _write_crystal_pdb(pdb)
+    U = mda.Universe(str(pdb))
+    w = detect_water(U)
+    assert (w.resname, w.oxygen, w.hydrogens) == ("HOH", "O", ())
+
+    cfg = Config(topology=str(pdb), trajectory="", reference="resname ALA and name O",
+                 protein_cutoff=30.0, bulk_degree=4, pbc=False, output_dir=str(tmp_path / "out"))
+    stats = run(cfg, progress=False, log=lambda *a: None)
+    assert stats["frames"] == 1 and stats["frames_with_path"] == 1
+    path = read_frames(tmp_path / "out" / "traj_path_nodes.dat")[0][1][0]
+    assert len(path) == 7 and path[0].endswith("ALA 1") and path[-1].endswith("HOH 105")
+
+    cfg.directed = True
+    with pytest.raises(SelectionError, match="hydrogens"):
+        PathFinder(U, cfg)

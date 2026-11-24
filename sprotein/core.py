@@ -64,6 +64,11 @@ class PathFinder:
 
         self.hydrogens = None
         if cfg.directed:
+            if len(self.water.hydrogens) < 2:
+                raise SelectionError(
+                    f"Directed graphs need water hydrogens, but water '{self.water.resname}' has only oxygen "
+                    "(typical of crystal structures). Use directed = false, or add hydrogens to the structure."
+                )
             h1, h2 = self.water.hydrogens
             h_sels = hydrogens_of_selections(U, cfg.selections, cfg.h_distance)
             h_parts = ([f"({_or_join(h_sels)})"] if h_sels else []) + [
@@ -118,15 +123,23 @@ def _xyz_line(xyz) -> str:
     return f"{xyz[0]:.3f} {xyz[1]:.3f} {xyz[2]:.3f}\n"
 
 
+def load_universe(cfg: Config, log=print, topology: str | None = None, trajectory: str | None = None) -> mda.Universe:
+    """Load topology + trajectory. An empty trajectory means a single structure
+    (e.g. a crystal structure in PDB format)."""
+    top = cfg.path(topology or cfg.topology)
+    trj_name = trajectory or cfg.trajectory
+    trj = cfg.path(trj_name) if trj_name else None
+    for p in (top, trj):
+        if p is not None and not p.exists():
+            raise FileNotFoundError(f"Input file '{p}' not found.")
+    log(f"Loading {top.name}" + (f" + {trj.name}" if trj else " (single structure)") + " ...")
+    return mda.Universe(str(top), str(trj)) if trj else mda.Universe(str(top))
+
+
 def run(cfg: Config, progress: bool = True, log=print) -> dict:
     """Run the analysis described by ``cfg`` and write the output files."""
     validate(cfg)
-    top, trj = cfg.path(cfg.topology), cfg.path(cfg.trajectory)
-    for p in (top, trj):
-        if not p.exists():
-            raise FileNotFoundError(f"Input file '{p}' not found.")
-    log(f"Loading {top.name} + {trj.name} ...")
-    U = mda.Universe(str(top), str(trj))
+    U = load_universe(cfg, log)
     finder = PathFinder(U, cfg)
     w = finder.water
     log(f"Water: {w.resname} (O={w.oxygen})   Reference: {finder.ref[0].resname}{finder.ref[0].resid}:{finder.ref[0].name}"

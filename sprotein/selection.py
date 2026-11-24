@@ -18,7 +18,7 @@ class SelectionError(ValueError):
 class WaterModel:
     resname: str
     oxygen: str
-    hydrogens: tuple[str, str]
+    hydrogens: tuple[str, ...]  # empty for oxygen-only water (e.g. crystal structures)
 
 
 def detect_water(U: mda.Universe, resname: str = "auto") -> WaterModel:
@@ -41,9 +41,10 @@ def detect_water(U: mda.Universe, resname: str = "auto") -> WaterModel:
     names = list(U.select_atoms(f"resname {resname}").residues[0].atoms.names)
     oxygens = [n for n in names if n.upper().startswith("O")]
     hydrogens = [n for n in names if n.upper().startswith("H")]
-    if not oxygens or len(hydrogens) < 2:
+    if not oxygens:
         raise SelectionError(f"Residue '{resname}' does not look like water (atoms: {' '.join(names)}).")
-    return WaterModel(resname, oxygens[0], (hydrogens[0], hydrogens[1]))
+    # Crystal structures usually have oxygen-only waters: fine for undirected graphs.
+    return WaterModel(resname, oxygens[0], tuple(hydrogens[:2]) if len(hydrogens) >= 2 else ())
 
 
 def select_one_atom(U: mda.Universe, selection: str, what: str = "reference atom") -> mda.AtomGroup:
@@ -85,7 +86,8 @@ def describe_topology(U: mda.Universe, resname: str | None = None) -> str:
             lines.append(f"Protein: {prot.n_residues} residues (resid {prot.resids.min()}-{prot.resids.max()})")
         try:
             w = detect_water(U)
-            lines.append(f"Water (auto-detected): {w.resname}  O={w.oxygen}  H={w.hydrogens[0]},{w.hydrogens[1]}")
+            h = ",".join(w.hydrogens) if w.hydrogens else "none (oxygen only: undirected graphs only)"
+            lines.append(f"Water (auto-detected): {w.resname}  O={w.oxygen}  H={h}")
         except SelectionError as e:
             lines.append(f"Water: {e}")
         lines.append("")

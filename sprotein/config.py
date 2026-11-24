@@ -129,7 +129,7 @@ TEMPLATE = '''\
 
 [input]
 topology   = "structure.gro"     # structure / topology file (gro, pdb, tpr, psf, ...)
-trajectory = "traj.xtc"          # trajectory file (xtc, trr, dcd, ...)
+trajectory = "traj.xtc"          # trajectory file (xtc, trr, dcd, ...); "" for a single structure (e.g. a PDB)
 # start = 0                      # optional frame slicing (0-based, stop excluded)
 # stop  = 100
 # step  = 1

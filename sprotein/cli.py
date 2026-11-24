@@ -67,7 +67,6 @@ def cmd_run(args):
 
 
 def cmd_neighbors(args):
-    import MDAnalysis as mda
     from .neighbors import annotate_neighbors
 
     cfg = _cfg(args)
@@ -84,9 +83,9 @@ def cmd_neighbors(args):
             sys.exit(f"--anchor expects RESNAME:ATOM, got '{a}'.")
         res, atom = a.split(":", 1)
         anchors[res] = atom
-    top = _abs(args.topology) or str(cfg.path(cfg.topology))
-    trj = _abs(args.trajectory) or str(cfg.path(cfg.trajectory))
-    U = mda.Universe(top, trj)
+    from .core import load_universe
+
+    U = load_universe(cfg, lambda *a: None, _abs(args.topology), _abs(args.trajectory))
     annotate_neighbors(
         U, src, dst,
         n=args.n if args.n is not None else cfg.neighbors_n,
